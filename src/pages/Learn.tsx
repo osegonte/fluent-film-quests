@@ -1,10 +1,9 @@
-
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Play, Star, Clock, Users } from "lucide-react";
+import { Play, Star, Clock, Users, Film } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const movies = [

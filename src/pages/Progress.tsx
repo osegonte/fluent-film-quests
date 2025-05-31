@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Trophy, Flame, Target, Calendar, Star, TrendingUp, BookOpen } from "lucide-react";
 
-const Progress = () => {
+const ProgressPage = () => {
   const streakDays = 23;
   const totalWords = 347;
   const weeklyGoal = 5;
@@ -183,4 +183,4 @@ const Progress = () => {
   );
 };
 
-export default Progress;
+export default ProgressPage;
