@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { MessageCircle, Send, Crown, Medal, Award, Heart } from "lucide-react";
+import { MessageCircle, Send, Crown, Medal, Award, Heart, Flame } from "lucide-react";
 
 const Community = () => {
   const [newMessage, setNewMessage] = useState("");
