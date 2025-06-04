@@ -27,124 +27,136 @@ const ProgressPage = () => {
   ];
 
   const getHeatmapColor = (value: number) => {
-    if (value === 0) return "bg-muted";
-    if (value === 1) return "bg-green-200 dark:bg-green-900";
-    if (value === 2) return "bg-green-400 dark:bg-green-700";
-    if (value === 3) return "bg-green-600 dark:bg-green-500";
-    return "bg-green-800 dark:bg-green-300";
+    if (value === 0) return "bg-muted/50";
+    if (value === 1) return "bg-success/30 dark:bg-success/40";
+    if (value === 2) return "bg-success/60 dark:bg-success/60";
+    if (value === 3) return "bg-success dark:bg-success/80";
+    return "bg-success dark:bg-success";
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      <div className="container mx-auto px-4 py-6 max-w-md">
-        {/* Header */}
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-foreground mb-2">Your Progress</h1>
-          <p className="text-muted-foreground">Track your learning journey</p>
+    <div className="min-h-screen bg-gradient-to-br from-green-50/50 via-background to-blue-50/50 dark:from-gray-950 dark:via-background dark:to-green-950/50">
+      <div className="container mx-auto px-4 py-6 max-w-md pb-24">
+        {/* Enhanced Header */}
+        <div className="mb-8">
+          <h1 className="text-headline text-foreground mb-2">Your Progress</h1>
+          <p className="text-body">Track your learning journey</p>
         </div>
 
-        {/* Stats Overview */}
-        <div className="grid grid-cols-2 gap-4 mb-6">
-          <Card className="p-4 text-center">
-            <div className="flex items-center justify-center mb-2">
-              <Flame className="w-6 h-6 text-orange-500" />
+        {/* Enhanced Stats Overview with Better Hierarchy */}
+        <div className="grid grid-cols-2 gap-4 mb-8">
+          <Card className="mobile-card text-center p-6">
+            <div className="flex items-center justify-center mb-3">
+              <div className="p-3 bg-warning/20 rounded-full">
+                <Flame className="w-6 h-6 text-warning" />
+              </div>
             </div>
-            <div className="text-2xl font-bold text-foreground">{streakDays}</div>
-            <div className="text-sm text-muted-foreground">Day Streak</div>
+            <div className="text-3xl font-bold text-foreground mb-1 tabular-nums">{streakDays}</div>
+            <div className="text-caption">Day Streak</div>
           </Card>
 
-          <Card className="p-4 text-center">
-            <div className="flex items-center justify-center mb-2">
-              <BookOpen className="w-6 h-6 text-blue-500" />
+          <Card className="mobile-card text-center p-6">
+            <div className="flex items-center justify-center mb-3">
+              <div className="p-3 bg-primary/20 rounded-full">
+                <BookOpen className="w-6 h-6 text-primary" />
+              </div>
             </div>
-            <div className="text-2xl font-bold text-foreground">{totalWords}</div>
-            <div className="text-sm text-muted-foreground">Words Learned</div>
+            <div className="text-3xl font-bold text-foreground mb-1 tabular-nums">{totalWords}</div>
+            <div className="text-caption">Words Learned</div>
           </Card>
         </div>
 
-        {/* Weekly Goal */}
-        <Card className="p-4 mb-6">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="font-semibold text-foreground">Weekly Goal</h3>
-            <Badge variant={completedThisWeek >= weeklyGoal ? "default" : "secondary"}>
+        {/* Enhanced Weekly Goal */}
+        <Card className="mobile-card p-6 mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-title text-foreground flex items-center gap-2">
+              <Target className="w-5 h-5 text-primary" />
+              Weekly Goal
+            </h3>
+            <Badge variant={completedThisWeek >= weeklyGoal ? "default" : "secondary"} className="text-sm">
               {completedThisWeek}/{weeklyGoal}
             </Badge>
           </div>
-          <Progress value={(completedThisWeek / weeklyGoal) * 100} className="mb-2" />
-          <p className="text-sm text-muted-foreground">
+          <div className="progress-enhanced mb-3">
+            <div 
+              className="progress-fill" 
+              style={{ width: `${(completedThisWeek / weeklyGoal) * 100}%` }}
+            />
+          </div>
+          <p className="text-body">
             {weeklyGoal - completedThisWeek > 0 
               ? `${weeklyGoal - completedThisWeek} more lessons to reach your goal`
-              : "Goal achieved! 🎉"
+              : "🎉 Goal achieved! Keep the momentum going!"
             }
           </p>
         </Card>
 
-        {/* Learning Heatmap */}
-        <Card className="p-4 mb-6">
-          <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
-            <Calendar className="w-5 h-5" />
+        {/* Enhanced Learning Heatmap */}
+        <Card className="mobile-card p-6 mb-8">
+          <h3 className="text-title text-foreground mb-4 flex items-center gap-2">
+            <Calendar className="w-5 h-5 text-primary" />
             Learning Activity
           </h3>
-          <div className="grid grid-cols-7 gap-1">
+          <div className="grid grid-cols-7 gap-2">
             {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, index) => (
-              <div key={day} className="text-xs text-muted-foreground text-center p-1">
+              <div key={day} className="text-caption text-center p-1 font-medium">
                 {day}
               </div>
             ))}
             {heatmapData.flat().map((value, index) => (
               <div
                 key={index}
-                className={`w-8 h-8 rounded-sm ${getHeatmapColor(value)} border border-background`}
+                className={`w-8 h-8 rounded-md ${getHeatmapColor(value)} border border-border/50 transition-all duration-200 hover:scale-110`}
                 title={`${value} lessons completed`}
               />
             ))}
           </div>
-          <div className="flex items-center justify-between mt-3 text-xs text-muted-foreground">
+          <div className="flex items-center justify-between mt-4 text-caption">
             <span>Less</span>
             <div className="flex gap-1">
-              <div className="w-3 h-3 rounded-sm bg-muted" />
-              <div className="w-3 h-3 rounded-sm bg-green-200 dark:bg-green-900" />
-              <div className="w-3 h-3 rounded-sm bg-green-400 dark:bg-green-700" />
-              <div className="w-3 h-3 rounded-sm bg-green-600 dark:bg-green-500" />
+              <div className="w-3 h-3 rounded-sm bg-muted/50" />
+              <div className="w-3 h-3 rounded-sm bg-success/30" />
+              <div className="w-3 h-3 rounded-sm bg-success/60" />
+              <div className="w-3 h-3 rounded-sm bg-success" />
             </div>
             <span>More</span>
           </div>
         </Card>
 
-        {/* Achievements */}
-        <Card className="p-4 mb-6">
-          <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
-            <Trophy className="w-5 h-5" />
+        {/* Enhanced Achievements */}
+        <Card className="mobile-card p-6 mb-8">
+          <h3 className="text-title text-foreground mb-6 flex items-center gap-2">
+            <Trophy className="w-5 h-5 text-primary" />
             Achievements
           </h3>
-          <div className="space-y-3">
+          <div className="space-y-4">
             {achievements.map((achievement, index) => {
               const Icon = achievement.icon;
               return (
                 <div
                   key={index}
-                  className={`flex items-center gap-3 p-3 rounded-lg transition-all ${
+                  className={`flex items-center gap-4 p-4 rounded-xl transition-all duration-200 ${
                     achievement.earned
-                      ? "bg-primary/10 border border-primary/20"
-                      : "bg-muted/50"
+                      ? "bg-primary/10 border-2 border-primary/20 shadow-sm"
+                      : "bg-surface-alt border border-border/50"
                   }`}
                 >
                   <div
-                    className={`p-2 rounded-full ${
+                    className={`p-3 rounded-full transition-all duration-200 ${
                       achievement.earned
-                        ? "bg-primary text-primary-foreground"
+                        ? "bg-primary text-primary-foreground shadow-lg"
                         : "bg-muted text-muted-foreground"
                     }`}
                   >
-                    <Icon className="w-4 h-4" />
+                    <Icon className="w-5 h-5" />
                   </div>
                   <div className="flex-1">
-                    <div className="font-medium text-foreground">{achievement.title}</div>
-                    <div className="text-sm text-muted-foreground">{achievement.description}</div>
+                    <div className="font-semibold text-foreground mb-1">{achievement.title}</div>
+                    <div className="text-body">{achievement.description}</div>
                   </div>
                   {achievement.earned && (
-                    <Badge variant="default" className="text-xs">
-                      Earned
+                    <Badge variant="default" className="text-xs animate-bounce-subtle">
+                      ✨ Earned
                     </Badge>
                   )}
                 </div>
@@ -153,28 +165,28 @@ const ProgressPage = () => {
           </div>
         </Card>
 
-        {/* Study Stats */}
-        <Card className="p-4">
-          <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
-            <TrendingUp className="w-5 h-5" />
+        {/* Enhanced Study Stats */}
+        <Card className="mobile-card p-6">
+          <h3 className="text-title text-foreground mb-6 flex items-center gap-2">
+            <TrendingUp className="w-5 h-5 text-primary" />
             This Month
           </h3>
-          <div className="space-y-3">
-            <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">Lessons Completed</span>
-              <span className="font-semibold text-foreground">24</span>
+          <div className="space-y-4">
+            <div className="flex justify-between items-center py-2 border-b border-border/50 last:border-0">
+              <span className="text-body">Lessons Completed</span>
+              <span className="font-bold text-foreground tabular-nums">24</span>
             </div>
-            <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">Study Time</span>
-              <span className="font-semibold text-foreground">8h 32m</span>
+            <div className="flex justify-between items-center py-2 border-b border-border/50 last:border-0">
+              <span className="text-body">Study Time</span>
+              <span className="font-bold text-foreground tabular-nums">8h 32m</span>
             </div>
-            <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">New Words</span>
-              <span className="font-semibold text-foreground">127</span>
+            <div className="flex justify-between items-center py-2 border-b border-border/50 last:border-0">
+              <span className="text-body">New Words</span>
+              <span className="font-bold text-success tabular-nums">127</span>
             </div>
-            <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">Accuracy</span>
-              <span className="font-semibold text-foreground">87%</span>
+            <div className="flex justify-between items-center py-2">
+              <span className="text-body">Accuracy</span>
+              <span className="font-bold text-primary tabular-nums">87%</span>
             </div>
           </div>
         </Card>
