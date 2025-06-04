@@ -64,33 +64,33 @@ const Learn = () => {
   };
 
   const inProgressMovies = filteredMovies.filter(movie => movie.progress > 0);
-  const hasActiveStreak = true; // Mock data for streak
+  const hasActiveStreak = true;
   const currentStreak = 23;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50/50 via-background to-purple-50/50 dark:from-gray-950 dark:via-background dark:to-blue-950/50">
+    <div className="min-h-screen gradient-bg-light dark:gradient-bg-dark">
       <div className="container mx-auto px-4 py-6 max-w-md pb-24">
-        {/* Enhanced Header with Dynamic Hero */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-3">
+        {/* Enhanced Header with better spacing */}
+        <div className="mb-8 pt-8">
+          <div className="flex items-center justify-between mb-4">
             <div>
-              <h1 className="text-headline text-foreground">
+              <h1 className="text-headline mb-2">
                 🍿 Learn with Movies
               </h1>
-              <p className="text-body mt-1">
+              <p className="text-body">
                 Master languages through cinema
               </p>
             </div>
             {hasActiveStreak && (
-              <div className="flex items-center gap-2 px-3 py-2 bg-warning/20 rounded-full">
+              <div className="flex items-center gap-2 px-3 py-2 bg-warning/20 dark:bg-warning/10 rounded-full animate-pulse-glow">
                 <Flame className="w-4 h-4 text-warning" />
-                <span className="text-sm font-bold text-warning">{currentStreak}</span>
+                <span className="text-sm font-bold text-warning tabular-nums">{currentStreak}</span>
               </div>
             )}
           </div>
         </div>
 
-        {/* Enhanced Language Filter with better mobile UX */}
+        {/* Enhanced Language Filter */}
         <div className="flex gap-2 mb-8 overflow-x-auto pb-2 scrollbar-hide">
           {languages.map((language) => (
             <Button
@@ -98,14 +98,14 @@ const Learn = () => {
               variant={selectedLanguage === language ? "default" : "outline"}
               size="sm"
               onClick={() => setSelectedLanguage(language)}
-              className="whitespace-nowrap btn-mobile min-w-fit px-4"
+              className="whitespace-nowrap btn-mobile min-w-fit px-4 focus-ring"
             >
               {language}
             </Button>
           ))}
         </div>
 
-        {/* Continue Learning Section with Enhanced Cards */}
+        {/* Continue Learning Section */}
         {inProgressMovies.length > 0 && (
           <div className="mb-8">
             <h2 className="text-title mb-4 flex items-center gap-2">
@@ -114,21 +114,21 @@ const Learn = () => {
             </h2>
             <div className="space-y-4">
               {inProgressMovies.map((movie) => (
-                <Card key={movie.id} className="mobile-card overflow-hidden">
+                <Card key={movie.id} className="mobile-card overflow-hidden group">
                   <div className="p-4">
                     <div className="flex items-center gap-4">
                       <div className="w-16 h-24 bg-gradient-to-br from-primary/80 to-purple-500 rounded-lg flex items-center justify-center shadow-md">
                         <Film className="w-8 h-8 text-white" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-bold text-foreground mb-1">{movie.title}</h3>
+                        <h3 className="font-bold text-foreground mb-1 truncate">{movie.title}</h3>
                         <p className="text-caption mb-3">
                           {movie.language} • {movie.difficulty}
                         </p>
                         <div className="mb-3">
                           <div className="flex justify-between text-caption mb-1">
                             <span>{movie.completedScenes}/{movie.scenes} scenes</span>
-                            <span>{movie.progress}%</span>
+                            <span className="tabular-nums">{movie.progress}%</span>
                           </div>
                           <div className="progress-enhanced">
                             <div 
@@ -140,7 +140,7 @@ const Learn = () => {
                         <Button
                           size="sm"
                           onClick={() => handleStartLesson(movie.id)}
-                          className="w-full btn-mobile"
+                          className="w-full btn-mobile group-hover:scale-[1.02] transition-transform focus-ring"
                         >
                           <Play className="w-4 h-4 mr-2" />
                           Continue Learning
@@ -173,7 +173,7 @@ const Learn = () => {
                         <h3 className="text-title text-foreground truncate pr-2">{movie.title}</h3>
                         <div className="flex items-center gap-1 text-caption flex-shrink-0">
                           <Star className="w-3 h-3 fill-warning text-warning" />
-                          <span className="font-medium">{movie.rating}</span>
+                          <span className="font-medium tabular-nums">{movie.rating}</span>
                         </div>
                       </div>
                       
@@ -204,7 +204,7 @@ const Learn = () => {
                         <div className="mb-4">
                           <div className="flex justify-between text-caption mb-1">
                             <span>{movie.completedScenes}/{movie.scenes} scenes</span>
-                            <span>{movie.progress}%</span>
+                            <span className="tabular-nums">{movie.progress}%</span>
                           </div>
                           <div className="progress-enhanced">
                             <div 
@@ -217,7 +217,7 @@ const Learn = () => {
 
                       <Button
                         onClick={() => handleStartLesson(movie.id)}
-                        className="w-full btn-mobile group-hover:scale-[1.02] transition-transform"
+                        className="w-full btn-mobile group-hover:scale-[1.02] transition-transform focus-ring"
                         size="sm"
                       >
                         <Play className="w-4 h-4 mr-2" />
@@ -231,13 +231,13 @@ const Learn = () => {
           </div>
         </div>
 
-        {/* Sticky Progress Footer */}
+        {/* Enhanced Sticky Progress Footer */}
         {inProgressMovies.length > 0 && (
           <div className="sticky-progress">
             <div className="max-w-md mx-auto flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Flame className="w-4 h-4 text-warning" />
-                <span className="text-sm font-medium">{currentStreak}-day streak</span>
+                <span className="text-sm font-medium tabular-nums">{currentStreak}-day streak</span>
               </div>
               <div className="text-caption">
                 {inProgressMovies.length} lesson{inProgressMovies.length !== 1 ? 's' : ''} in progress
