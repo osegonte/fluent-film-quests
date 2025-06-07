@@ -36,6 +36,12 @@
     --text-primary: 222.2 84% 4.9%;
     --text-secondary: 215.4 16.3% 46.9%;
     --text-disabled: 215.4 16.3% 65%;
+    
+    /* Mobile-specific safe areas */
+    --safe-area-inset-top: env(safe-area-inset-top);
+    --safe-area-inset-bottom: env(safe-area-inset-bottom);
+    --safe-area-inset-left: env(safe-area-inset-left);
+    --safe-area-inset-right: env(safe-area-inset-right);
   }
 
   .dark {
@@ -81,6 +87,33 @@
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
     transition: background-color 0.3s ease, color 0.3s ease;
+    /* Enhanced mobile scrolling */
+    -webkit-overflow-scrolling: touch;
+    /* Prevent zoom on input focus for mobile */
+    font-size: 16px;
+  }
+
+  /* Mobile-first input handling */
+  @media (max-width: 768px) {
+    input[type="search"],
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+      font-size: 16px; /* Prevents zoom on iOS */
+    }
+  }
+
+  /* Safe area support */
+  .h-safe-area-inset-bottom {
+    height: var(--safe-area-inset-bottom);
+  }
+  
+  .pt-safe-area-inset-top {
+    padding-top: var(--safe-area-inset-top);
+  }
+  
+  .pb-safe-area-inset-bottom {
+    padding-bottom: var(--safe-area-inset-bottom);
   }
 }
 
@@ -90,11 +123,20 @@
     @apply rounded-xl bg-card backdrop-blur-sm border border-border/50 shadow-lg;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     transition: all 0.3s ease;
+    /* Better touch feedback */
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
   }
   
   .mobile-card:hover {
-    @apply shadow-xl scale-[1.02];
+    @apply shadow-xl;
+    transform: translateY(-2px);
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
+
+  /* Mobile touch optimization */
+  .mobile-card:active {
+    transform: translateY(-1px) scale(0.98);
   }
 
   .dark .mobile-card {
@@ -116,7 +158,7 @@
     background: linear-gradient(90deg, hsl(var(--primary)), hsl(var(--primary) / 0.8));
   }
 
-  /* Typography hierarchy */
+  /* Typography hierarchy - Mobile optimized */
   .text-headline {
     @apply text-2xl font-bold tracking-tight text-foreground;
   }
@@ -154,18 +196,30 @@
     background-color: hsl(var(--surface-alt));
   }
 
-  /* Enhanced button improvements */
+  /* Enhanced mobile button improvements */
   .btn-mobile {
     @apply min-h-[44px] px-4 py-3 rounded-lg font-medium transition-all duration-200;
     transform: translateZ(0); /* Hardware acceleration */
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    /* Ensure minimum touch target size */
+    min-width: 44px;
   }
   
   .btn-mobile:active {
     @apply scale-95;
+    transform: scale(0.95) translateZ(0);
   }
 
   .btn-mobile:hover {
-    transform: translateY(-1px);
+    transform: translateY(-1px) translateZ(0);
+  }
+
+  /* Mobile-optimized touch targets */
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px] flex items-center justify-center;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
   }
 
   /* Gradient backgrounds */
@@ -186,6 +240,7 @@
   /* Sticky progress footer */
   .sticky-progress {
     @apply fixed bottom-16 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border p-3 z-40;
+    padding-bottom: calc(0.75rem + var(--safe-area-inset-bottom));
     transition: all 0.3s ease;
   }
 
@@ -198,6 +253,27 @@
   .tabular-nums {
     font-variant-numeric: tabular-nums;
     font-feature-settings: "tnum" 1;
+  }
+
+  /* Mobile scroll improvements */
+  .mobile-scroll {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+
+  /* Pull-to-refresh indicator */
+  .pull-to-refresh {
+    @apply flex items-center justify-center py-4 text-muted-foreground;
+    min-height: 60px;
+    transition: all 0.3s ease;
+  }
+
+  /* Mobile navigation enhancements */
+  .mobile-nav {
+    @apply bg-background/95 backdrop-blur-md border-t border-border;
+    padding-bottom: var(--safe-area-inset-bottom);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
   }
 }
 
@@ -257,24 +333,26 @@
   animation: pulse-glow 2s infinite;
 }
 
-/* Improved scrollbar styling */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
+/* Improved scrollbar styling - Hidden on mobile */
+@media (min-width: 768px) {
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
 
-::-webkit-scrollbar-track {
-  background: hsl(var(--muted) / 0.3);
-  border-radius: 3px;
-}
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--muted) / 0.3);
+    border-radius: 3px;
+  }
 
-::-webkit-scrollbar-thumb {
-  background: hsl(var(--muted-foreground) / 0.5);
-  border-radius: 3px;
-}
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground) / 0.5);
+    border-radius: 3px;
+  }
 
-::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--muted-foreground) / 0.7);
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.7);
+  }
 }
 
 /* Hide scrollbar for mobile swipe areas */
@@ -285,4 +363,51 @@
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+
+/* Mobile-specific optimizations */
+@media (max-width: 768px) {
+  /* Disable text selection on UI elements */
+  .no-select {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+
+  /* Improve touch scrolling */
+  .touch-scroll {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+  }
+
+  /* Optimize animations for mobile */
+  @media (prefers-reduced-motion: no-preference) {
+    .mobile-card {
+      transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+    }
+  }
+}
+
+/* iOS-specific optimizations */
+@supports (-webkit-touch-callout: none) {
+  .ios-fix {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+  }
+  
+  /* Fix iOS input zoom */
+  @media screen and (max-width: 768px) {
+    input {
+      font-size: 16px !important;
+    }
+  }
+}
+
+/* Android-specific optimizations */
+@media (pointer: coarse) {
+  .touch-optimization {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
 }
