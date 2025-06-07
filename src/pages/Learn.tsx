@@ -126,7 +126,6 @@ const Learn = () => {
           <SearchBar 
             onSearch={handleSearch}
             placeholder="Search movies, languages, or topics..."
-            showFilters={true}
           />
         </div>
 
