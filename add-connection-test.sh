@@ -1,3 +1,29 @@
+#!/bin/bash
+
+# add-connection-test.sh
+# Script to properly add ConnectionTest component to CineFluent app
+
+echo "🔧 Adding ConnectionTest to CineFluent app..."
+
+# Check if we're in the right directory
+if [[ ! -f "src/App.tsx" ]]; then
+    echo "❌ Error: Not in the correct directory. Please run from cinefluent-mobile/cinefluent-mobile/"
+    exit 1
+fi
+
+# Fix main.tsx (remove incorrectly placed ConnectionTest)
+echo "📝 Fixing main.tsx..."
+cat > src/main.tsx << 'EOF'
+import { createRoot } from 'react-dom/client'
+import App from './App.tsx'
+import './index.css'
+
+createRoot(document.getElementById("root")!).render(<App />);
+EOF
+
+# Add ConnectionTest to Learn page (main page)
+echo "📝 Adding ConnectionTest to Learn page..."
+cat > temp_learn.tsx << 'EOF'
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -112,3 +138,23 @@ const Learn = () => {
 };
 
 export default Learn;
+EOF
+
+# Check if Learn page exists and back it up
+if [[ -f "src/pages/Learn.tsx" ]]; then
+    echo "📋 Backing up existing Learn.tsx..."
+    cp src/pages/Learn.tsx src/pages/Learn.tsx.backup
+fi
+
+# Replace Learn page
+mv temp_learn.tsx src/pages/Learn.tsx
+
+echo "✅ ConnectionTest successfully added to your app!"
+echo ""
+echo "🎯 Next steps:"
+echo "1. Your React app should still be running at http://localhost:8080/"
+echo "2. Make sure your FastAPI is running at http://localhost:8000/"
+echo "3. Check your browser - you should see the ConnectionTest component!"
+echo ""
+echo "🔧 If you need to restore the original Learn page:"
+echo "   mv src/pages/Learn.tsx.backup src/pages/Learn.tsx"
