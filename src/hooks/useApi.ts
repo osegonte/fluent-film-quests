@@ -14,10 +14,10 @@ export function useHealthCheck() {
 }
 
 // Movies Hooks
-export function useMovies(page = 1, limit = 20) {
+export function useMovies(params?: { page?: number; limit?: number; language?: string; difficulty?: string; genre?: string }) {
   return useQuery({
-    queryKey: ['movies', page, limit],
-    queryFn: () => apiService.getMovies(page, limit),
+    queryKey: ['movies', params],
+    queryFn: () => apiService.getMovies(params),
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 }
@@ -55,7 +55,7 @@ export function useUpdateProgress() {
     mutationFn: ({ userId, movieId, progress }: {
       userId: string;
       movieId: string;
-      progress: number;
+      progress: { progress_percentage: number; time_watched: number; vocabulary_learned: number };
     }) => apiService.updateProgress(userId, movieId, progress),
     onSuccess: (data, variables) => {
       // Invalidate and refetch progress data
