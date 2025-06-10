@@ -1,6 +1,7 @@
-// src/lib/api.ts - Updated to work with new FastAPI endpoints
 
-const API_BASE = 'http://localhost:8000/api/v1';
+// src/lib/api.ts - Updated to work with production CineFluent API
+
+const API_BASE = 'https://cinefluent-api-production.up.railway.app/api/v1';
 
 export interface Movie {
   id: string;
@@ -15,6 +16,7 @@ export interface Movie {
   video_url?: string;
   is_premium: boolean;
   vocabulary_count: number;
+  imdb_rating?: number;
 }
 
 export interface MovieResponse {
@@ -34,9 +36,32 @@ export interface UserProgress {
 }
 
 export interface ProgressUpdate {
+  movie_id: string;
   progress_percentage: number;
   time_watched: number;
-  vocabulary_learned: number;
+  vocabulary_learned?: number;
+}
+
+export interface AuthResponse {
+  user: {
+    id: string;
+    email: string;
+    role: string;
+  };
+  access_token: string;
+  refresh_token: string;
+  token_type: string;
+  expires_in: number;
+  message: string;
+}
+
+export interface LoginData {
+  email: string;
+  password: string;
+}
+
+export interface RegisterData extends LoginData {
+  full_name?: string;
 }
 
 class ApiService {
@@ -53,7 +78,8 @@ class ApiService {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
       }
 
       return await response.json();
@@ -63,9 +89,41 @@ class ApiService {
     }
   }
 
-  // Health check
+  // Health check - updated to use correct endpoint
   async healthCheck() {
-    return this.request<{ status: string; service: string }>('/../../'); // Root endpoint
+    return this.request<{ status: string; service: string; message: string }>('/health');
+  }
+
+  // Authentication API
+  async register(data: RegisterData): Promise<AuthResponse> {
+    return this.request<AuthResponse>('/auth/register', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async login(data: LoginData): Promise<AuthResponse> {
+    return this.request<AuthResponse>('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async getCurrentUser(token: string) {
+    return this.request<{ user: any; profile: any }>('/auth/me', {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+  }
+
+  async logout(token: string): Promise<void> {
+    await this.request<{ message: string }>('/auth/logout', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
   }
 
   // Movies API
@@ -87,12 +145,19 @@ class ApiService {
     return this.request<MovieResponse>(`/movies${query ? `?${query}` : ''}`);
   }
 
-  async getMovie(movieId: string): Promise<Movie> {
-    return this.request<Movie>(`/movies/${movieId}`);
+  async getMovie(movieId: string, token?: string): Promise<{ movie: Movie; user_progress?: UserProgress }> {
+    const headers: Record<string, string> = {};
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+    
+    return this.request<{ movie: Movie; user_progress?: UserProgress }>(`/movies/${movieId}`, {
+      headers,
+    });
   }
 
   async searchMovies(query: string, limit = 10) {
-    return this.request<{ movies: Movie[]; query: string }>(
+    return this.request<{ movies: Movie[]; query: string; total: number }>(
       `/movies/search?q=${encodeURIComponent(query)}&limit=${limit}`
     );
   }
@@ -106,40 +171,69 @@ class ApiService {
     return this.request<{ progress: UserProgress[] }>(`/users/${userId}/progress`);
   }
 
-  async updateProgress(userId: string, movieId: string, progress: ProgressUpdate) {
+  async updateProgress(data: ProgressUpdate, token: string) {
     return this.request<{ message: string; progress: UserProgress }>(
-      `/users/${userId}/movies/${movieId}/progress`,
+      '/progress/update',
       {
         method: 'POST',
-        body: JSON.stringify(progress),
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
       }
     );
   }
 
-  async getMovieProgress(userId: string, movieId: string): Promise<UserProgress> {
-    return this.request<UserProgress>(`/users/${userId}/movies/${movieId}/progress`);
+  async getProgressStats(token: string) {
+    return this.request<{
+      total_movies_watched: number;
+      completed_movies: number;
+      total_time_watched: number;
+      total_vocabulary_learned: number;
+      average_progress: number;
+      recent_activity: any[];
+    }>('/progress/stats', {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
   }
 
   // Subtitles API
   async getSubtitles(movieId: string, language = 'en') {
     return this.request<{
-      movie_id: string;
-      language: string;
-      subtitles: Array<{ start: number; end: number; text: string }>;
-    }>(`/movies/${movieId}/subtitles?lang=${language}`);
+      subtitles: Array<{
+        id: string;
+        movie_id: string;
+        language: string;
+        title: string;
+        file_type: string;
+        total_cues: number;
+        total_segments: number;
+        duration: number;
+        vocabulary_count: number;
+        created_at: string;
+      }>;
+      total: number;
+    }>(`/subtitles/movie/${movieId}?language=${language}`);
   }
 
   // Categories API
   async getCategories() {
     return this.request<{
-      categories: Array<{ id: string; name: string; icon: string }>;
+      categories: Array<{ 
+        id: string; 
+        name: string; 
+        description: string;
+        sort_order: number;
+      }>;
     }>('/categories');
   }
 
   // Languages API
   async getLanguages() {
     return this.request<{
-      languages: Array<{ code: string; name: string; flag: string }>;
+      languages: string[];
     }>('/languages');
   }
 }
